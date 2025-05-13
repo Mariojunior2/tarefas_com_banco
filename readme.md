@@ -107,7 +107,7 @@ create table usuario (
     foto_path varchar(255) null
 )
 
---- Tabela de Tarefa
+--- Tabela de Tarefa FALTOU ESSE
 create table tarefa (
     id int not null primary key auto_increment,
     titulo varchar (255) not null,
