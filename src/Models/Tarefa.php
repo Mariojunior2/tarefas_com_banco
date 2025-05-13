@@ -3,11 +3,11 @@ namespace App\Models;
 
 class Tarefa
 {
-    private ? int $id = null;
-    private string $titulo = "";
-    private string $descricao = "";
-    private bool $status = false;
-    private int $user_id = 0;
+    public ? int $id = null;
+    public string $titulo = "";
+    public string $descricao = "";
+    public bool $status = false;
+    public int $user_id = 0;
 }
 
 
