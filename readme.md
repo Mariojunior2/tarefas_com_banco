@@ -105,15 +105,23 @@ create table usuario (
     senha varchar (255) not null,
     email varchar(255) not null unique,
     foto_path varchar(255) null
-)
+);
 
---- Tabela de Tarefa FALTOU ESSE
+--- Tabela de Tarefa 
 create table tarefa (
     id int not null primary key auto_increment,
-    titulo varchar (255) not null,
-    descricao varchar (255) not null,
+    titulo varchar(255) not null,
+    descricao text not null unique,
     status TINYINT(1) NOT NULL,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-)
+    CONSTRAINT fk_usuario_tarefa FOREIGN KEY (user_id) REFERENCES usuario(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- Ver estrutura das TABELAS
+describe 'tabela sem aspas';
+
+--- Pegar os dados
+select * from 'tabela sem aspas';
 ```
