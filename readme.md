@@ -114,7 +114,7 @@ create table tarefa (
     descricao text not null unique,
     status TINYINT(1) NOT NULL,
     user_id INT NOT NULL,
-    CONSTRAINT fk_usuario_tarefa FOREIGN KEY (user_id) REFERENCES usuario(id)
+    CONSTRAINT fk_usuario_tarefa FOREIGN KEY (user_id) REFERENCES usuario(id) -- LAÇO DE LIGAÇÃO 
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
