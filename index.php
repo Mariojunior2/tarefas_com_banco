@@ -2,6 +2,7 @@
 
 use App\Database\Mariadb;
 use App\Models\Tarefa;
+use App\Models\Usuario;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpNotFoundException;
@@ -42,6 +43,17 @@ $app->get('/usuario/{id}/tarefas', function (Request $request, Response $respons
     $response->getBody()->write(json_encode($tarefas));
     return $response;
 });
+
+
+$app->get('/usuario/{id}', function (Request $request, Response $response, $args) use ($banco) {
+    $user_id = $args['id'];
+    $usuario = new Usuario($banco->getConnection());
+    $usuarios = $usuario->getByuserID($user_id);
+    $response->getBody()->write(json_encode($usuarios));
+    return $response;
+});
+
+
 
 
 
