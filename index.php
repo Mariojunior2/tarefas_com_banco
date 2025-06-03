@@ -48,11 +48,38 @@ $app->get('/usuario/{id}/tarefas', function (Request $request, Response $respons
 $app->get('/usuario/{id}', function (Request $request, Response $response, $args) use ($banco) {
     $user_id = $args['id'];
     $usuario = new Usuario($banco->getConnection());
-    $usuarios = $usuario->getByuserID($user_id);
+    $usuarios = $usuario->getByuserID($user_id) ?? [];
     $response->getBody()->write(json_encode($usuarios));
-    return $response;
+    return $response->withHeader('Content-Type','application/json');
 });
 
+
+$app->post('/usuario',
+  function (Request $request, Response $response, array $args) use($banco){
+    $campos_obrigatorios = ['nome',"login",'senha',"email"];
+    $body = $request->getParsedBody();
+    try{
+      $usuario = new Usuario($banco->getConnection());
+      $usuario->nome = $body["nome"] ?? '';
+      $usuario->email = $body["email"] ?? '';
+      $usuario->senha = $body["senha"] ?? '';
+      $usuario->login = $body["login"] ?? '';
+      $usuario->foto_path = $body["foto_path"] ?? '';
+      foreach($campos_obrigatorios as $campo){
+        if(empty($usuario->{$campo})){
+          throw new \Exception("o campo {$campo} é obrigatório");
+        };
+      }
+      $usuario->createUser();
+    }catch(\Exception $e){
+      $response->getBody()->write(json_encode(['massage' => $e->getMessage() ]));
+      return $response->withHeader('Content-Type','application/json') ->withStatus(400);
+    }
+    $response->getBody()->write(json_encode([
+      'message' => 'Usuario cadastrado com sucesso'
+    ]));
+    return $response->withHeader('Content-Type','application/json');
+  });
 
 
 
