@@ -49,13 +49,26 @@ $app->get('/usuario/{id}', function (Request $request, Response $response, $args
     $user_id = $args['id'];
     $usuario = new Usuario($banco->getConnection());
     $usuarios = $usuario->getByuserID($user_id) ?? [];
+  
     $response->getBody()->write(json_encode($usuarios));
     return $response->withHeader('Content-Type','application/json');
 });
 
 
+$app->delete('/usuario/{id}', function (Request $request, Response $response, $args) use ($banco) {
+  $user_id = $args['id'];
+  $usuario = new Usuario($banco->getConnection());
+  $usuarios = $usuario->deleteUser($user_id) ?? [];
+
+  $response->getBody()->write(json_encode($usuarios));
+  return $response->withHeader('Content-Type','application/json');
+});
+
+
+
+
 $app->post('/usuario',
-  function (Request $request, Response $response, array $args) use($banco){
+  function (Request $request, Response $response, array $args) use ($banco){
     $campos_obrigatorios = ['nome',"login",'senha',"email"];
     $body = $request->getParsedBody();
     try{

@@ -36,8 +36,14 @@ class Usuario
         $sql = "SELECT * FROM usuario WHERE id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute([':id' => $id]);
-        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-        return $result ?: null;
+        $resultado = $stmt->fetch();
+        if($resultado) {
+         unset($resultado['senha']);
+         return $resultado;
+        }
+
+
+        return [];
     }
 
     public function update(): bool
