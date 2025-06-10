@@ -1,3 +1,8 @@
+# minha informações para atividade
+
+NOME: Mario Gonçalves de Freitas Junior
+DATA: 10/06/2025
+
 # **WSL**
 Permite rodar distribuições linux dentro do windows.
 

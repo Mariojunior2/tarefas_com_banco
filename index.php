@@ -44,6 +44,92 @@ $app->get('/usuario/{id}/tarefas', function (Request $request, Response $respons
     return $response;
 });
 
+$app->post('/tarefa', function (Request $request, Response $response) use ($banco) {
+    $body = $request->getParsedBody();
+
+    try {
+        $tarefa = new Tarefa($banco->getConnection());
+        $tarefa->titulo = $body['titulo'] ?? '';
+        $tarefa->descricao = $body['descricao'] ?? '';
+        $tarefa->status = isset($body['status']) ? (bool)$body['status'] : false;
+        $tarefa->user_id = $body['user_id'] ?? 0;
+
+        if (empty($tarefa->titulo) || empty($tarefa->descricao) || empty($tarefa->user_id)) {
+            throw new \Exception('Campos obrigatórios: titulo, descricao, user_id');
+        }
+
+        $tarefa->create();
+
+        $response->getBody()->write(json_encode(['message' => 'Tarefa criada com sucesso']));
+        return $response->withHeader('Content-Type', 'application/json');
+    } catch (\Exception $e) {
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+$app->get('/tarefa/{id}', function (Request $request, Response $response, $args) use ($banco) {
+    $tarefa = new Tarefa($banco->getConnection());
+    $resultado = $tarefa->getTarefaById((int)$args['id']);
+
+    if ($resultado) {
+        $response->getBody()->write(json_encode($resultado));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    $response->getBody()->write(json_encode(['error' => 'Tarefa não encontrada']));
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+});
+
+$app->put('/tarefa/{id}', function (Request $request, Response $response, array $args) use ($banco) {
+    $body = json_decode($request->getBody()->getContents(), true);
+    $id = $args['id'];
+
+    try {
+        $tarefa = new Tarefa($banco->getConnection());
+        $tarefa->id = $id;
+        $tarefa->titulo = $body['titulo'] ?? '';
+        $tarefa->descricao = $body['descricao'] ?? '';
+        $tarefa->user_id = $body['user_id'] ?? '';
+        $tarefa->status = isset($body['status']) ? (bool)$body['status'] : false;
+
+
+        if (empty($tarefa->titulo) || empty($tarefa->descricao) || empty($tarefa->user_id)) {
+            throw new \Exception("Campos obrigatórios: titulo e descricao");
+        }
+
+        if ($tarefa->update()) {
+            $response->getBody()->write(json_encode(['message' => 'Tarefa atualizada com sucesso']));
+        } else {
+            $response->getBody()->write(json_encode(['error' => 'Tarefa não encontrada ou não atualizada']));
+        }
+
+        return $response->withHeader('Content-Type', 'application/json');
+
+    } catch (\Exception $e) {
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+
+
+$app->delete('/tarefa/{id}', function (Request $request, Response $response, $args) use ($banco) {
+    $tarefa = new Tarefa($banco->getConnection());
+
+    $sucesso = $tarefa->delete((int)$args['id']);
+
+    if ($sucesso) {
+        $response->getBody()->write(json_encode(['message' => 'Tarefa excluída com sucesso']));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    $response->getBody()->write(json_encode(['error' => 'Erro ao excluir a tarefa']));
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+});
+
+
+
 
 $app->get('/usuario/{id}', function (Request $request, Response $response, $args) use ($banco) {
     $user_id = $args['id'];
@@ -95,7 +181,41 @@ $app->post('/usuario',
   });
 
 
+  $app->put('/usuario/{id}',
+  function (Request $request, Response $response, array $args) use ($banco){
+    $campos_obrigatorios = ['nome',"login",'senha',"email"];
+    $body = json_decode($request->getBody()->getContents(), true);
+    
+    
+    try{
+      $usuario = new Usuario($banco->getConnection());
+      $usuario->id = $args['id'];
+      $usuario->nome = $body["nome"] ?? '';
+      $usuario->email = $body["email"] ?? '';
+      $usuario->senha = $body["senha"] ?? '';
+      $usuario->login = $body["login"] ?? '';
+      $usuario->foto_path = $body["foto_path"] ?? '';
+      foreach($campos_obrigatorios as $campo){
+        if(empty($usuario->{$campo})){
+          throw new \Exception("o campo {$campo} é obrigatório");
+        };
+      }
+      $usuario->update();
+    }catch(\Exception $e){
+      $response->getBody()->write(json_encode(['massage' => $e->getMessage() ]));
+      return $response->withHeader('Content-Type','application/json') ->withStatus(400);
+    }
+    $response->getBody()->write(json_encode([
+      'message' => 'Usuario atualizado com sucesso'
+    ]));
+    return $response->withHeader('Content-Type','application/json');
+  });
 
 
 
-$app->run();
+
+
+
+
+
+  $app->run();
