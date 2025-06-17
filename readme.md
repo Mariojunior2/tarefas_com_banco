@@ -3,6 +3,8 @@
 NOME: Mario Gonçalves de Freitas Junior
 DATA: 10/06/2025
 
+![alt text](<Captura de tela 2025-06-10 165712.png>) ![alt text](<Captura de tela 2025-06-10 165515.png>) ![alt text](<Captura de tela 2025-06-10 164447.png>) ![alt text](<Captura de tela 2025-06-10 164119.png>)
+
 # **WSL**
 Permite rodar distribuições linux dentro do windows.
 
